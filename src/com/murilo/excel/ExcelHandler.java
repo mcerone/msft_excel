@@ -51,6 +51,15 @@ public class ExcelHandler {
         }
     }
     
+    /*TO DO:
+    Methods:
+    getters
+    getLines from Sheet
+    getHeader from Sheet
+    getCell from Sheet
+    getCellMetadata from Sheet
+    */
+    
     public void printExcelFileSummary(){
         System.out.println("Summary of "+fileName+": ");
         System.out.println("\t"+numSheets+" sheets");

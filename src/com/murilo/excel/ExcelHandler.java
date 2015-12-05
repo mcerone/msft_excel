@@ -61,10 +61,10 @@ public class ExcelHandler {
     */
     
     public void printExcelFileSummary(){
-        System.out.println("Summary of "+fileName+": ");
+        System.out.println("Summary of "+fileName.substring(fileName.lastIndexOf('\\')+1, fileName.length())+": ");
         System.out.println("\t"+numSheets+" sheets");
         for (int i = 0; i < numSheets; i++) {
-            System.out.println("\t\t"+sheetsNames[i]+" has "+numRowsPerSheet[i]+" rows.");            
+            System.out.println("\t\t\""+sheetsNames[i]+"\" has "+numRowsPerSheet[i]+" rows.");            
         }
     }
     

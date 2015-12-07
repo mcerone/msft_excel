@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -27,6 +30,7 @@ public class ExcelHandler {
     private String fileName=null;
     private int[] numRowsPerSheet = null;
     private String[] sheetsNames = null;
+    private Sheet[] sheets = null;
     
     public ExcelHandler(String fileName){
         try {
@@ -44,10 +48,11 @@ public class ExcelHandler {
         numSheets = wb.getNumberOfSheets();
         numRowsPerSheet = new int[numSheets];
         sheetsNames = new String[numSheets];
+        sheets = new Sheet[numSheets];
         for (int i = 0; i < numSheets; i++) {
-            Sheet sht = wb.getSheetAt(i);
-            sheetsNames[i] = sht.getSheetName();
-            numRowsPerSheet[i] = sht.getPhysicalNumberOfRows();
+            sheets[i] = wb.getSheetAt(i);
+            sheetsNames[i] = sheets[i].getSheetName();
+            numRowsPerSheet[i] = sheets[i].getPhysicalNumberOfRows();
         }
     }
     
@@ -60,12 +65,64 @@ public class ExcelHandler {
     getCellMetadata from Sheet
     */
     
+    public int getNumSheets(){
+        return numSheets;
+    }
+    
+    public String getSheetName(int index){
+        try{
+            return sheetsNames[index];
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("There's no sheet with index: "+index);
+            return null;
+        }
+    }
+    
+    public int getCountRowsFromSheet(int index){
+        try{
+            return numRowsPerSheet[index];
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("There's no sheet with index: "+index);
+            return -1;
+        }
+    }
+    
     public void printExcelFileSummary(){
         System.out.println("Summary of "+fileName.substring(fileName.lastIndexOf('\\')+1, fileName.length())+": ");
         System.out.println("\t"+numSheets+" sheets");
         for (int i = 0; i < numSheets; i++) {
             System.out.println("\t\t\""+sheetsNames[i]+"\" has "+numRowsPerSheet[i]+" rows.");            
         }
+    }
+    
+    public String getLine(int sheetIndex,int lineIndex){
+        Row linha = sheets[sheetIndex].getRow(lineIndex);
+        String aux = "";
+        for (int i = linha.getFirstCellNum(); i < linha.getLastCellNum(); i++) {
+            Cell campo = linha.getCell(i);
+            aux = aux + stringrizeCell(campo)+" "; 
+        }
+        
+        return aux;
+    }
+    
+    private String stringrizeCell(Cell x){
+        
+        
+        switch (x.getCellType()){
+            case Cell.CELL_TYPE_BLANK:
+                return "";
+            case Cell.CELL_TYPE_BOOLEAN:
+                return String.valueOf(x.getBooleanCellValue());
+            case Cell.CELL_TYPE_NUMERIC:
+                return String.valueOf(x.getNumericCellValue());
+            case Cell.CELL_TYPE_STRING:
+                return x.getStringCellValue();
+            case Cell.CELL_TYPE_FORMULA:
+                return x.getCellFormula();
+        }
+        
+        return null;
     }
     
     private Workbook newWorkbook(String filename) throws IOException, InvalidFormatException{

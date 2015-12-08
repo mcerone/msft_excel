@@ -58,8 +58,6 @@ public class ExcelHandler {
     
     /*TO DO:
     Methods:
-    getters
-    getLines from Sheet
     getHeader from Sheet
     getCell from Sheet
     getCellMetadata from Sheet
@@ -95,19 +93,22 @@ public class ExcelHandler {
         }
     }
     
-    public String getLine(int sheetIndex,int lineIndex){
+    public String getLine(int sheetIndex,int lineIndex, char separator){
         Row linha = sheets[sheetIndex].getRow(lineIndex);
         String aux = "";
         for (int i = linha.getFirstCellNum(); i < linha.getLastCellNum(); i++) {
             Cell campo = linha.getCell(i);
-            aux = aux + stringrizeCell(campo)+" "; 
+            if((i+1)!=linha.getLastCellNum()){
+                aux = aux + "\""+stringrizeCell(campo)+"\"" + separator; 
+            } else{
+               aux = aux + "\""+stringrizeCell(campo)+"\"\n";
+            }
         }
         
         return aux;
     }
     
     private String stringrizeCell(Cell x){
-        
         
         switch (x.getCellType()){
             case Cell.CELL_TYPE_BLANK:
@@ -119,7 +120,14 @@ public class ExcelHandler {
             case Cell.CELL_TYPE_STRING:
                 return x.getStringCellValue();
             case Cell.CELL_TYPE_FORMULA:
-                return x.getCellFormula();
+                switch (x.getCachedFormulaResultType()){
+                        case Cell.CELL_TYPE_NUMERIC:
+                            return String.valueOf(x.getNumericCellValue());
+                        case Cell.CELL_TYPE_STRING:
+                            return x.getStringCellValue();
+                        case Cell.CELL_TYPE_BLANK:
+                            return "";
+                }
         }
         
         return null;

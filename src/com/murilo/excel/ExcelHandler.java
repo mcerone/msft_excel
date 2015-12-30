@@ -36,9 +36,7 @@ public class ExcelHandler {
             this.fileName=fileName;
             wb = newWorkbook(fileName);
             setAttributes();
-        } catch (IOException ex) {
-            Logger.getLogger(ExcelHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidFormatException ex) {
+        } catch (IOException | InvalidFormatException ex) {
             Logger.getLogger(ExcelHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
